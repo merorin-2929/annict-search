@@ -1,0 +1,40 @@
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: 🛠️ Build
+    runs-on: windows-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          pip insall -r requirements.txt
+      - name: Install Pyinstaller
+        run: |
+          pip install wheel
+          git clone https://github.com/pyinstaller/pyinstaller.git
+          cd pyinstaller/bootloader
+          python ./waf all
+          cd ..
+          pip install .
+          cd ..
+      - name: Build EXE
+        run: |
+          pyinstaller --clean --onefile --name annict-search main.py
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: |
+            dist/*.exe
