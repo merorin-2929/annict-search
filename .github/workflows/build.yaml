@@ -19,7 +19,7 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: |
-          pip insall -r requirements.txt
+          pip install -r requirements.txt
       - name: Install Pyinstaller
         run: |
           pip install wheel
